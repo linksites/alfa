@@ -52,7 +52,7 @@ export default function Diferenciais() {
           {[...FAIXA, ...FAIXA].map((t, i) => (
             <span
               key={i}
-              className="font-display text-4xl uppercase text-creme/20 md:text-6xl"
+              className="font-display text-4xl uppercase text-creme/55 md:text-6xl"
             >
               {t}
               <span className="mx-8 text-terracota">/</span>

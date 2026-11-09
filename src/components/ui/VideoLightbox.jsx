@@ -15,6 +15,8 @@ import { FaXmark, FaChevronLeft, FaChevronRight, FaVolumeHigh, FaVolumeXmark } f
 export default function VideoLightbox({ videos, index, onClose, onIndexChange }) {
   const open = index !== null
   const videoRef = useRef(null)
+  const closeRef = useRef(null)
+  const dialogRef = useRef(null)
   const touchX = useRef(null)
   const [muted, setMuted] = useState(false)
   const [progress, setProgress] = useState(0)
@@ -36,6 +38,15 @@ export default function VideoLightbox({ videos, index, onClose, onIndexChange })
       if (e.key === 'Escape') onClose()
       else if (e.key === 'ArrowRight') go(1)
       else if (e.key === 'ArrowLeft') go(-1)
+      else if (e.key === 'Tab') {
+        const buttons = dialogRef.current?.querySelectorAll('button')
+        const edge = e.shiftKey ? buttons?.[0] : buttons?.[buttons.length - 1]
+        if (edge === document.activeElement) {
+          e.preventDefault()
+          const next = e.shiftKey ? buttons[buttons.length - 1] : buttons[0]
+          next.focus()
+        }
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -45,9 +56,12 @@ export default function VideoLightbox({ videos, index, onClose, onIndexChange })
   useEffect(() => {
     if (!open) return
     const prev = document.body.style.overflow
+    const trigger = document.activeElement
     document.body.style.overflow = 'hidden'
+    closeRef.current?.focus()
     return () => {
       document.body.style.overflow = prev
+      trigger?.focus({ preventScroll: true })
     }
   }, [open])
 
@@ -55,14 +69,24 @@ export default function VideoLightbox({ videos, index, onClose, onIndexChange })
   useEffect(() => {
     const el = videoRef.current
     if (!el || index === null) return
-    el.currentTime = 0
-    el.muted = muted
+    let active = true
     el.play().catch(() => {
+      if (!active) return
       el.muted = true
       setMuted(true)
       el.play().catch(() => {})
     })
-  }, [index, muted])
+    return () => {
+      active = false
+    }
+  }, [index])
+
+  function toggleSound() {
+    const el = videoRef.current
+    if (!el) return
+    el.muted = !el.muted
+    setMuted(el.muted)
+  }
 
   if (!open) return null
   const video = videos[index]
@@ -70,6 +94,7 @@ export default function VideoLightbox({ videos, index, onClose, onIndexChange })
   return (
     <AnimatePresence>
       <motion.div
+        ref={dialogRef}
         className="fixed inset-0 z-[60] flex items-center justify-center bg-carvao/95 backdrop-blur-md"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -80,7 +105,7 @@ export default function VideoLightbox({ videos, index, onClose, onIndexChange })
         aria-label={`Vídeo: ${video.titulo}`}
       >
         <div
-          className="relative flex h-full max-h-[90vh] w-full max-w-[min(92vw,480px)] flex-col"
+          className="relative flex h-full max-h-[90svh] w-full max-w-[min(92vw,480px)] flex-col"
           onClick={(e) => e.stopPropagation()}
           onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
           onTouchEnd={(e) => {
@@ -106,11 +131,12 @@ export default function VideoLightbox({ videos, index, onClose, onIndexChange })
           </div>
 
           {/* Vídeo */}
-          <div className="relative flex-1 overflow-hidden rounded-2xl bg-black">
+          <div className="relative min-h-0 flex-1 overflow-hidden rounded-2xl bg-black">
             <video
               ref={videoRef}
               key={video.mp4}
               autoPlay
+              muted={muted}
               playsInline
               poster={video.poster}
               onTimeUpdate={(e) => {
@@ -131,19 +157,20 @@ export default function VideoLightbox({ videos, index, onClose, onIndexChange })
 
           {/* Controles */}
           <button
+            ref={closeRef}
             type="button"
             onClick={onClose}
             aria-label="Fechar"
-            className="absolute -top-1 right-0 flex h-10 w-10 -translate-y-full items-center justify-center rounded-full bg-creme/10 text-creme transition hover:bg-creme/20"
+            className="absolute right-3 top-6 flex h-11 w-11 items-center justify-center rounded-full bg-carvao/75 text-creme transition hover:bg-carvao"
           >
             <FaXmark />
           </button>
 
           <button
             type="button"
-            onClick={() => setMuted((m) => !m)}
+            onClick={toggleSound}
             aria-label={muted ? 'Ativar som' : 'Desativar som'}
-            className="absolute right-3 top-8 flex h-10 w-10 items-center justify-center rounded-full bg-carvao/60 text-creme backdrop-blur transition hover:bg-carvao/80"
+            className="absolute right-[3.875rem] top-6 flex h-11 w-11 items-center justify-center rounded-full bg-carvao/75 text-creme backdrop-blur transition hover:bg-carvao"
           >
             {muted ? <FaVolumeXmark /> : <FaVolumeHigh />}
           </button>

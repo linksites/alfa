@@ -63,25 +63,3 @@ export function staggerIn(targets, { stagger = 0.12, y = 30, delay = 0 } = {}) {
     },
   )
 }
-
-/**
- * Parallax: move o elemento mais devagar que o scroll, criando profundidade.
- * `amount` é o deslocamento total em px ao longo do trajeto.
- */
-export function parallax(el, { amount = 120 } = {}) {
-  if (!el || reducedMotion()) return
-  gsap.fromTo(
-    el,
-    { yPercent: -amount / 10 },
-    {
-      yPercent: amount / 10,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: el,
-        start: 'top bottom',
-        end: 'bottom top',
-        scrub: true,
-      },
-    },
-  )
-}

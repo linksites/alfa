@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { FaWhatsapp } from 'react-icons/fa'
 import { HiMenu, HiX } from 'react-icons/hi'
@@ -19,6 +19,7 @@ const LINKS = [
 export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [aberto, setAberto] = useState(false)
+  const botaoMenu = useRef(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -26,6 +27,24 @@ export default function Header() {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  useEffect(() => {
+    if (!aberto) return
+
+    const desktop = window.matchMedia('(min-width: 1024px)')
+    const fechar = () => setAberto(false)
+    const onKey = (event) => {
+      if (event.key !== 'Escape') return
+      fechar()
+      botaoMenu.current?.focus()
+    }
+    desktop.addEventListener('change', fechar)
+    window.addEventListener('keydown', onKey)
+    return () => {
+      desktop.removeEventListener('change', fechar)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [aberto])
 
   return (
     <motion.header
@@ -40,10 +59,10 @@ export default function Header() {
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-8">
         {/* Logo */}
-        <a href="#topo" className="flex items-center gap-3">
+        <a href="#topo" onClick={() => setAberto(false)} className="flex items-center gap-3">
           <img
             src={LOGO}
-            alt={MARCA.nome}
+            alt=""
             className="h-11 w-11 rounded-full object-cover md:h-12 md:w-12"
           />
           <span className="font-display text-xl uppercase tracking-wide text-creme md:text-2xl">
@@ -54,7 +73,7 @@ export default function Header() {
         </a>
 
         {/* Menu desktop */}
-        <ul className="hidden items-center gap-8 md:flex">
+        <ul className="hidden items-center gap-5 lg:flex xl:gap-8">
           {LINKS.map((l) => (
             <li key={l.href}>
               <a
@@ -79,11 +98,13 @@ export default function Header() {
             Agendar
           </a>
           <button
+            ref={botaoMenu}
             type="button"
             onClick={() => setAberto((v) => !v)}
             aria-label={aberto ? 'Fechar menu' : 'Abrir menu'}
             aria-expanded={aberto}
-            className="text-2xl text-creme md:hidden"
+            aria-controls={aberto ? 'menu-mobile' : undefined}
+            className="grid h-11 w-11 place-items-center text-2xl text-creme lg:hidden"
           >
             {aberto ? <HiX /> : <HiMenu />}
           </button>
@@ -93,17 +114,18 @@ export default function Header() {
       {/* Menu mobile recolhível */}
       {aberto && (
         <motion.ul
+          id="menu-mobile"
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: 'auto', opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
-          className="flex flex-col gap-1 border-t border-creme/10 bg-carvao/95 px-5 py-4 md:hidden"
+          className="flex max-h-[calc(100dvh-5rem)] flex-col gap-1 overflow-y-auto border-t border-creme/10 bg-carvao/95 px-5 py-4 lg:hidden"
         >
           {LINKS.map((l) => (
             <li key={l.href}>
               <a
                 href={l.href}
                 onClick={() => setAberto(false)}
-                className="block py-2 text-sm font-medium uppercase tracking-widest text-creme/80 hover:text-terracota"
+                className="flex min-h-11 items-center py-2 text-sm font-medium uppercase tracking-widest text-creme/80 hover:text-terracota"
               >
                 {l.label}
               </a>

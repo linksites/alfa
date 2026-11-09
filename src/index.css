@@ -10,6 +10,7 @@
 html {
   /* O scroll suave é controlado pelo Lenis; mantemos fallback nativo. */
   scroll-behavior: smooth;
+  scroll-padding-top: 84px;
 }
 
 /* Quando o Lenis está ativo, ele assume o controle da rolagem. */
@@ -37,6 +38,37 @@ body {
 .font-display {
   letter-spacing: 0.01em;
   line-height: 0.92;
+}
+
+.hero-background-frame {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+}
+
+.hero-background::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background: linear-gradient(180deg, #0e0e0e80, #0e0e0e55 28%, #0e0e0ed9 73%, #0e0e0e);
+}
+
+@media (min-width: 768px), (min-width: 600px) and (orientation: landscape) {
+  .hero-background-frame {
+    inset-inline-start: auto;
+    inset-inline-end: max(0px, calc((100% - 80rem) / 2));
+    height: 100%;
+    aspect-ratio: 9 / 16;
+    max-width: 60%;
+    mask-image: linear-gradient(90deg, transparent, black 18%, black 90%, transparent);
+  }
+
+  .hero-background::after {
+    background:
+      linear-gradient(90deg, #0e0e0e 18%, #0e0e0ed9 38%, #0e0e0e15 72%),
+      linear-gradient(180deg, #0e0e0e70, transparent 23%, transparent 72%, #0e0e0e);
+  }
 }
 
 /* Seleção de texto na cor da marca */
@@ -75,13 +107,7 @@ body {
     scroll-behavior: auto !important;
   }
 
-  /* Exceção: o letreiro (marquee) é um movimento contínuo, horizontal e
-     previsível — efeito de marca desejado. Mantemos sua rolagem mesmo com
-     "reduzir movimento", apenas um pouco mais lenta. */
   .animate-marquee {
-    animation-name: marquee !important;
-    animation-duration: 34s !important;
-    animation-timing-function: linear !important;
-    animation-iteration-count: infinite !important;
+    animation: none !important;
   }
 }

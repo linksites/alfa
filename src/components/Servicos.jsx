@@ -9,25 +9,22 @@ const SERVICOS = [
     icon: GiScissors,
     nome: 'Corte',
     desc: 'Corte na tesoura ou máquina, finalizado do seu jeito.',
-    preco: 'a partir de R$ —',
   },
   {
     icon: GiBeard,
     nome: 'Barba',
     desc: 'Toalha quente, navalha e desenho preciso.',
-    preco: 'a partir de R$ —',
     destaque: true,
   },
   {
     icon: GiRazor,
     nome: 'Combo',
     desc: 'Corte + barba: a experiência completa Padrão Alfa.',
-    preco: 'a partir de R$ —',
   },
 ]
 
 /**
- * Serviços: cards de Corte, Barba e Combo. Preço como placeholder.
+ * Serviços: cards de Corte, Barba e Combo.
  * Reveal por máscara ao entrar na tela + micro-interação no hover (Framer).
  */
 export default function Servicos() {
@@ -46,7 +43,7 @@ export default function Servicos() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
-        {SERVICOS.map(({ icon: Icon, nome, desc, preco, destaque }) => (
+        {SERVICOS.map(({ icon: Icon, nome, desc, destaque }) => (
           <motion.article
             key={nome}
             whileHover={{ y: -8 }}
@@ -60,9 +57,6 @@ export default function Servicos() {
             <Icon className="mb-6 text-4xl text-terracota" aria-hidden="true" />
             <h3 className="font-display text-3xl uppercase text-creme">{nome}</h3>
             <p className="mt-3 flex-1 text-creme/70">{desc}</p>
-            <p className="mt-6 text-sm font-semibold uppercase tracking-widest text-creme/50">
-              {preco}
-            </p>
             <div className="mt-6">
               <Button
                 variant={destaque ? 'solid' : 'outline'}

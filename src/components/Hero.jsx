@@ -1,17 +1,17 @@
 import { useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { FaClock, FaMapMarkerAlt, FaWhatsapp } from 'react-icons/fa'
 import Button from './ui/Button'
 import { MARCA, LOGO, VIDEOS } from '../lib/site'
-import { parallax, staggerIn } from '../lib/animations'
+import { staggerIn } from '../lib/animations'
 
 /**
- * Hero em tela cheia: vídeo real de fundo (reel) com parallax, emblema da
- * marca no fluxo, slogan que se monta com stagger, descrição e CTA grande.
+ * O reel mantém o enquadramento vertical em uma faixa no desktop e ocupa
+ * o fundo da abertura no celular.
  */
 export default function Hero() {
-  const fotoRef = useRef(null)
   const palavrasRef = useRef([])
+  const reducedMotion = useReducedMotion()
 
   // Nome da marca em duas linhas (BARBEARIA / ALFA) para o título do hero.
   const marca = MARCA.nome.split(' ')
@@ -20,41 +20,30 @@ export default function Hero() {
   const fundo = VIDEOS[0]
 
   useEffect(() => {
-    parallax(fotoRef.current, { amount: 140 })
     staggerIn(palavrasRef.current, { stagger: 0.12, y: 50, delay: 0.2 })
   }, [])
 
   return (
     <section
       id="topo"
-      className="relative flex min-h-[100svh] items-end overflow-hidden"
+      className="relative isolate flex min-h-[100svh] items-end overflow-hidden bg-carvao"
     >
-      {/* Vídeo de fundo com parallax (vai um pouco além da viewport) */}
-      <div className="absolute inset-0 -z-10">
-        <div ref={fotoRef} className="absolute inset-0 -top-[10%] h-[120%]">
-          <video
-            className="h-full w-full object-cover"
-            poster={fundo.poster}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            aria-hidden="true"
-          >
-            <source src={fundo.webm} type="video/webm" />
-            <source src={fundo.mp4} type="video/mp4" />
-          </video>
+      <div className="hero-background absolute inset-0 -z-10" aria-hidden="true">
+        <div className="hero-background-frame" style={{ backgroundImage: `url("${fundo.poster}")` }}>
+          {reducedMotion === false && (
+            <video className="h-full w-full object-cover" poster={fundo.poster} autoPlay muted loop playsInline preload="metadata">
+              <source src={fundo.webm} type="video/webm" />
+              <source src={fundo.mp4} type="video/mp4" />
+            </video>
+          )}
         </div>
-        {/* Gradiente para legibilidade do texto */}
-        <div className="absolute inset-0 bg-gradient-to-t from-carvao via-carvao/80 to-carvao/40" />
       </div>
 
       {/* Conteúdo */}
-      <div className="mx-auto w-full max-w-7xl px-5 pb-20 pt-32 md:px-8 md:pb-28">
+      <div className="mx-auto w-full max-w-7xl px-5 pb-14 pt-28 md:px-8 lg:pb-24">
         {/* Emblema da marca (no fluxo, acima do título) */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.92, y: 12 }}
+          initial={reducedMotion ? false : { opacity: 0, scale: 0.92, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut', delay: 0.1 }}
           className="relative mb-7 w-fit"
@@ -62,7 +51,7 @@ export default function Hero() {
           <div className="absolute inset-0 -z-10 scale-150 rounded-full bg-terracota/20 blur-2xl" />
           <img
             src={LOGO}
-            alt={MARCA.nome}
+            alt=""
             className="w-24 rounded-full shadow-2xl shadow-black/50 ring-1 ring-creme/10 sm:w-28"
           />
         </motion.div>
@@ -71,7 +60,7 @@ export default function Hero() {
           {MARCA.endereco}
         </p>
 
-        <h1 className="font-display text-[clamp(3rem,12vw,9rem)] uppercase leading-[0.85] text-creme">
+        <h1 className="font-display text-[clamp(2.5rem,12vw,9rem)] uppercase leading-[0.85] text-creme">
           <span className="block overflow-hidden">
             <span
               ref={(el) => (palavrasRef.current[0] = el)}
@@ -118,7 +107,7 @@ export default function Hero() {
       </div>
 
       {/* Indicador de scroll */}
-      <div className="pointer-events-none absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-creme/50 md:flex">
+      <div className="pointer-events-none absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-creme/50 lg:flex">
         <span className="text-[10px] uppercase tracking-[0.3em]">Role</span>
         <span className="h-10 w-px animate-pulse bg-creme/40" />
       </div>

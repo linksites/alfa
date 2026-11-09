@@ -14,10 +14,10 @@ export default function Footer() {
           <div className="flex items-center gap-3">
             <img
               src={LOGO}
-              alt={MARCA.nome}
-              className="h-14 w-14 rounded-full object-cover"
+              alt=""
+              className="h-12 w-12 shrink-0 rounded-full object-cover sm:h-14 sm:w-14"
             />
-            <p className="font-display text-3xl uppercase text-creme">
+            <p className="font-display text-2xl uppercase text-creme sm:text-3xl">
               {MARCA.nome.split(' ')[0]}
               <span className="text-terracota">.</span>
               <span className="text-creme/70">{MARCA.nome.split(' ')[1]}</span>
@@ -56,7 +56,7 @@ export default function Footer() {
         </ul>
       </div>
 
-      <div className="mx-auto mt-10 max-w-7xl border-t border-creme/10 pt-6 text-center text-xs uppercase tracking-widest text-creme/40 md:flex md:justify-between md:text-left">
+      <div className="mx-auto mt-10 max-w-7xl border-t border-creme/10 pt-6 text-center text-xs uppercase tracking-widest text-creme/60 md:flex md:justify-between md:text-left">
         <span>
           © {ano} {MARCA.nome}. Todos os direitos reservados.
         </span>
