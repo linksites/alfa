@@ -108,6 +108,6 @@ body {
   }
 
   .animate-marquee {
-    animation: none !important;
+    animation: marquee 34s linear infinite !important;
   }
 }
